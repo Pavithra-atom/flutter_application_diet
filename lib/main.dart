@@ -6,8 +6,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -27,28 +25,36 @@ class MealForm extends StatefulWidget {
 }
 
 class _MealFormState extends State<MealForm> {
-  String selectedMorningFood = 'Select Morning Food';
-  String selectedLunchFood = 'Select Lunch Food';
-  String selectedDinnerFood = 'Select Dinner Food';
+  TextEditingController morningQtyController = TextEditingController();
+  TextEditingController lunchQtyController = TextEditingController();
+  TextEditingController dinnerQtyController = TextEditingController();
 
-  int morningQuantity = 0;
-  int lunchQuantity = 0;
-  int dinnerQuantity = 0;
+  String? selectedMorning;
+  String? selectedLunch;
+  String? selectedDinner;
 
-  List<String> foodItems = [
-    'Select Morning Food',
-    'Eggs',
-    'Cereal',
-    'Toast',
-    'Select Lunch Food',
-    'Sandwich',
-    'Salad',
-    'Pasta',
-    'Select Dinner Food',
-    'Chicken',
-    'Fish',
-    'Vegetables',
-  ];
+  List<String> mealOptions = ['Select', 'Toast', 'Omelette', 'Sandwich', 'Salad', 'Pasta', 'Pizza', 'Chicken', 'Fish', 'Vegetables'];
+
+  Map<String, int> calorieMap = {
+    'Toast': 100,
+    'Omelette': 200,
+    'Sandwich': 300,
+    'Salad': 150,
+    'Pasta': 400,
+    'Pizza': 500,
+    'Chicken': 250,
+    'Fish': 300,
+    'Vegetables': 120,
+  };
+
+  int calculateCalories(String? selectedDish, String? quantity) {
+    if (selectedDish != null && quantity != null && quantity.isNotEmpty) {
+      int dishCalories = calorieMap[selectedDish] ?? 0;
+      int quantityValue = int.tryParse(quantity) ?? 0;
+      return dishCalories * quantityValue;
+    }
+    return 0;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,105 +64,88 @@ class _MealFormState extends State<MealForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            buildDropdown('Morning', selectedMorningFood, (String? newValue) {
-              setState(() {
-                selectedMorningFood = newValue!;
-              });
-            }),
-            buildQuantitySelector('Morning', morningQuantity, (int value) {
-              setState(() {
-                morningQuantity = value;
-              });
-            }),
+            TextFormField(
+              controller: morningQtyController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Morning Quantity'),
+            ),
             SizedBox(height: 16.0),
-            buildDropdown('Lunch', selectedLunchFood, (String? newValue) {
-              setState(() {
-                selectedLunchFood = newValue!;
-              });
-            }),
-            buildQuantitySelector('Lunch', lunchQuantity, (int value) {
-              setState(() {
-                lunchQuantity = value;
-              });
-            }),
+            DropdownButtonFormField<String>(
+              value: selectedMorning,
+              items: mealOptions.map((String meal) {
+                return DropdownMenuItem<String>(
+                  value: meal == 'Select' ? null : meal,
+                  child: Text(meal),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  selectedMorning = value;
+                });
+              },
+              decoration: InputDecoration(labelText: 'Morning Dish'),
+            ),
+            SizedBox(height: 32.0),
+            TextFormField(
+              controller: lunchQtyController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Lunch Quantity'),
+            ),
             SizedBox(height: 16.0),
-            buildDropdown('Dinner', selectedDinnerFood, (String? newValue) {
-              setState(() {
-                selectedDinnerFood = newValue!;
-              });
-            }),
-            buildQuantitySelector('Dinner', dinnerQuantity, (int value) {
-              setState(() {
-                dinnerQuantity = value;
-              });
-            }),
+            DropdownButtonFormField<String>(
+              value: selectedLunch,
+              items: mealOptions.map((String meal) {
+                return DropdownMenuItem<String>(
+                  value: meal == 'Select' ? null : meal,
+                  child: Text(meal),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  selectedLunch = value;
+                });
+              },
+              decoration: InputDecoration(labelText: 'Lunch Dish'),
+            ),
+            SizedBox(height: 32.0),
+            TextFormField(
+              controller: dinnerQtyController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration( labelText: 'Dinner Quantity'),
+            ),
+            SizedBox(height: 16.0),
+            DropdownButtonFormField<String>(
+              value: selectedDinner,
+              items: mealOptions.map((String meal) {
+                return DropdownMenuItem<String>(
+                  value: meal == 'Select' ? null : meal,
+                  child: Text(meal),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  selectedDinner = value;
+                });
+              },
+              decoration: InputDecoration(labelText: 'Dinner Dish'),
+            ),
             SizedBox(height: 32.0),
             ElevatedButton(
               onPressed: () {
                 // Handle form submission here
-                print('Morning Food: $selectedMorningFood, Quantity: $morningQuantity');
-                print('Lunch Food: $selectedLunchFood, Quantity: $lunchQuantity');
-                print('Dinner Food: $selectedDinnerFood, Quantity: $dinnerQuantity');
+                int morningCalories = calculateCalories(selectedMorning, morningQtyController.text);
+                int lunchCalories = calculateCalories(selectedLunch, lunchQtyController.text);
+                int dinnerCalories = calculateCalories(selectedDinner, dinnerQtyController.text);
+
+                print('Morning: $selectedMorning, Quantity: ${morningQtyController.text}, Calories: $morningCalories');
+                print('Lunch: $selectedLunch, Quantity: ${lunchQtyController.text}, Calories: $lunchCalories');
+                print('Dinner: $selectedDinner, Quantity: ${dinnerQtyController.text}, Calories: $dinnerCalories');
               },
               child: Text('Submit'),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget buildDropdown(String label, String value, Function(String?) onChanged) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('$label Food'),
-        SizedBox(height: 8.0),
-        DropdownButton<String>(
-          value: value,
-          onChanged: onChanged,
-          items: foodItems.map((String foodItem) {
-            return DropdownMenuItem<String>(
-              value: foodItem,
-              child: Text(foodItem),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget buildQuantitySelector(String label, int value, Function(int) onChanged) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SizedBox(height: 8.0),
-        Text('$label Quantity'),
-        SizedBox(height: 8.0),
-        Row(
-          children: [
-            Expanded(
-              child: IconButton(
-                icon: Icon(Icons.remove),
-                onPressed: () {
-                  if (value > 0) {
-                    onChanged(value - 1);
-                  }
-                },
-              ),
-            ),
-            Text('$value'),
-            Expanded(
-              child: IconButton(
-                icon: Icon(Icons.add),
-                onPressed: () {
-                  onChanged(value + 1);
-                },
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }
