@@ -64,14 +64,8 @@ class _MealFormState extends State<MealForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextFormField(
-              controller: morningQtyController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Morning Quantity'),
-            ),
-            SizedBox(height: 16.0),
             DropdownButtonFormField<String>(
-              value: selectedMorning,
+              value: selectedLunch,
               items: mealOptions.map((String meal) {
                 return DropdownMenuItem<String>(
                   value: meal == 'Select' ? null : meal,
@@ -80,19 +74,19 @@ class _MealFormState extends State<MealForm> {
               }).toList(),
               onChanged: (String? value) {
                 setState(() {
-                  selectedMorning = value;
+                  selectedLunch = value;
                 });
               },
-              decoration: InputDecoration(labelText: 'Morning Dish'),
+              decoration: InputDecoration(labelText: 'Mrg Dish'),
             ),
             SizedBox(height: 32.0),
             TextFormField(
-              controller: lunchQtyController,
+              controller: morningQtyController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Lunch Quantity'),
+              decoration: InputDecoration(labelText: 'Morning Quantity'),
             ),
             SizedBox(height: 16.0),
-            DropdownButtonFormField<String>(
+              DropdownButtonFormField<String>(
               value: selectedLunch,
               items: mealOptions.map((String meal) {
                 return DropdownMenuItem<String>(
@@ -108,12 +102,14 @@ class _MealFormState extends State<MealForm> {
               decoration: InputDecoration(labelText: 'Lunch Dish'),
             ),
             SizedBox(height: 32.0),
+
             TextFormField(
-              controller: dinnerQtyController,
+              controller: lunchQtyController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration( labelText: 'Dinner Quantity'),
+              decoration: InputDecoration(labelText: 'Lunch Quantity'),
             ),
             SizedBox(height: 16.0),
+            
             DropdownButtonFormField<String>(
               value: selectedDinner,
               items: mealOptions.map((String meal) {
@@ -130,6 +126,13 @@ class _MealFormState extends State<MealForm> {
               decoration: InputDecoration(labelText: 'Dinner Dish'),
             ),
             SizedBox(height: 32.0),
+              TextFormField(
+              controller: lunchQtyController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Lunch Quantity'),
+            ),
+            SizedBox(height: 16.0),
+            
             ElevatedButton(
               onPressed: () {
                 // Handle form submission here
