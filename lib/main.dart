@@ -28,10 +28,13 @@ class _MealFormState extends State<MealForm> {
   TextEditingController morningQtyController = TextEditingController();
   TextEditingController lunchQtyController = TextEditingController();
   TextEditingController dinnerQtyController = TextEditingController();
+    TextEditingController foodGramsController= TextEditingController();
+
 
   String? selectedMorning;
   String? selectedLunch;
   String? selectedDinner;
+  String? selectedFoodGrams;
 
   List<String> mealOptions = ['Select', 'Toast', 'Omelette', 'Sandwich', 'Salad', 'Pasta', 'Pizza', 'Chicken', 'Fish', 'Vegetables'];
 
@@ -46,6 +49,14 @@ class _MealFormState extends State<MealForm> {
     'Fish': 300,
     'Vegetables': 120,
   };
+  
+  List<String> foodGramsOptions = [
+    '100 grams',
+    '200 grams',
+    '300 grams',
+    '400 grams',
+    '500 grams',
+  ];
 
   int calculateCalories(String? selectedDish, String? quantity) {
     if (selectedDish != null && quantity != null && quantity.isNotEmpty) {
@@ -56,6 +67,17 @@ class _MealFormState extends State<MealForm> {
     return 0;
   }
 
+  
+  // int calculateFoodGrams(String? selectedDish, String? quantity) {
+  //   if (selectedFoodGrams != null && quantity != null && quantity.isNotEmpty) {
+  //     // int dishFoodGrams = foodGramsOptions[selectedDish] ?? 0;
+  //     int quantityValue = int.tryParse(quantity) ?? 0;
+  //     return dishFoodGrams * quantityValue;
+  //   }
+  //   return 0;
+  // }
+
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -65,7 +87,7 @@ class _MealFormState extends State<MealForm> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             DropdownButtonFormField<String>(
-              value: selectedLunch,
+              value: selectedMorning,
               items: mealOptions.map((String meal) {
                 return DropdownMenuItem<String>(
                   value: meal == 'Select' ? null : meal,
@@ -74,18 +96,50 @@ class _MealFormState extends State<MealForm> {
               }).toList(),
               onChanged: (String? value) {
                 setState(() {
-                  selectedLunch = value;
+                  selectedMorning = value;
                 });
               },
-              decoration: InputDecoration(labelText: 'Mrg Dish'),
+              decoration: InputDecoration(labelText: 'Dish Name'),
             ),
             SizedBox(height: 32.0),
+
+              DropdownButtonFormField<String>(
+              value: selectedFoodGrams,
+              items: foodGramsOptions.map((String gram) {
+                return DropdownMenuItem<String>(
+                  value: gram == 'Select' ? null : gram,
+                  child: Text(gram),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  selectedFoodGrams = value;
+                });
+              },
+              decoration: InputDecoration(labelText: 'Food Grams'),
+            ),
+            SizedBox(height: 32.0),
+
             TextFormField(
               controller: morningQtyController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Morning Quantity'),
+              decoration: InputDecoration(labelText: 'Quantity'),
             ),
             SizedBox(height: 16.0),
+
+  
+
+
+              ElevatedButton(
+              onPressed: () {
+                // Handle form submission here
+                int morningCalories = calculateCalories(selectedMorning, morningQtyController.text);
+                // int morningFoodGrams = calculateFoodGrams(selectedFoodGrams, foodGramsController.text);
+                print('Morning: $selectedMorning, Quantity: ${morningQtyController.text}, Calories: $morningCalories, Food Grams: $selectedFoodGrams');
+              },
+              child: Text('Submit'),
+            ),
+ //Lunch 
               DropdownButtonFormField<String>(
               value: selectedLunch,
               items: mealOptions.map((String meal) {
@@ -99,17 +153,42 @@ class _MealFormState extends State<MealForm> {
                   selectedLunch = value;
                 });
               },
-              decoration: InputDecoration(labelText: 'Lunch Dish'),
+              decoration: InputDecoration(labelText: 'Dish Name'),
             ),
             SizedBox(height: 32.0),
 
+              DropdownButtonFormField<String>(
+              value: selectedFoodGrams,
+              items: foodGramsOptions.map((String gram) {
+                return DropdownMenuItem<String>(
+                  value: gram == 'Select' ? null : gram,
+                  child: Text(gram),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  selectedFoodGrams = value;
+                });
+              },
+              decoration: InputDecoration(labelText: 'Food Grams'),
+            ),
+            SizedBox(height: 32.0),
             TextFormField(
               controller: lunchQtyController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Lunch Quantity'),
+              decoration: InputDecoration(labelText: 'Quantity'),
             ),
             SizedBox(height: 16.0),
-            
+              ElevatedButton(
+              onPressed: () {
+                // Handle form submission here
+                int lunchCalories = calculateCalories(selectedLunch, lunchQtyController.text);
+
+                print('Lunch: $selectedLunch, Quantity: ${lunchQtyController.text}, Calories: $lunchCalories, Food Grams: ${selectedFoodGrams}');
+              },
+              child: Text('Submit'),
+            ),
+            //Dinner 
             DropdownButtonFormField<String>(
               value: selectedDinner,
               items: mealOptions.map((String meal) {
@@ -123,26 +202,37 @@ class _MealFormState extends State<MealForm> {
                   selectedDinner = value;
                 });
               },
-              decoration: InputDecoration(labelText: 'Dinner Dish'),
+              decoration: InputDecoration(labelText: 'Dish Name'),
+            ),
+            SizedBox(height: 32.0),
+              DropdownButtonFormField<String>(
+              value: selectedFoodGrams,
+              items: foodGramsOptions.map((String gram) {
+                return DropdownMenuItem<String>(
+                  value: gram == 'Select' ? null : gram,
+                  child: Text(gram),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  selectedFoodGrams = value;
+                });
+              },
+              decoration: InputDecoration(labelText: 'Food Grams'),
             ),
             SizedBox(height: 32.0),
               TextFormField(
               controller: lunchQtyController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Lunch Quantity'),
+              decoration: InputDecoration(labelText: ' Quantity'),
             ),
             SizedBox(height: 16.0),
             
             ElevatedButton(
               onPressed: () {
                 // Handle form submission here
-                int morningCalories = calculateCalories(selectedMorning, morningQtyController.text);
-                int lunchCalories = calculateCalories(selectedLunch, lunchQtyController.text);
                 int dinnerCalories = calculateCalories(selectedDinner, dinnerQtyController.text);
-
-                print('Morning: $selectedMorning, Quantity: ${morningQtyController.text}, Calories: $morningCalories');
-                print('Lunch: $selectedLunch, Quantity: ${lunchQtyController.text}, Calories: $lunchCalories');
-                print('Dinner: $selectedDinner, Quantity: ${dinnerQtyController.text}, Calories: $dinnerCalories');
+                print('Dinner: $selectedDinner, Quantity: ${dinnerQtyController.text}, Calories: $dinnerCalories, Food Grams: ${selectedFoodGrams}',);
               },
               child: Text('Submit'),
             ),
