@@ -1,259 +1,131 @@
-
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 
 void main() {
   runApp(MyApp());
+}
+
+class Dish {
+  String name;
+  double caloriesPerGram;
+
+  Dish({required this.name, required this.caloriesPerGram});
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Meal Schedule'),
-        ),
-        body: MealForm(),
+      title: 'Dish Calories Calculator',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: MyHomePage(),
     );
   }
 }
 
-class MealForm extends StatefulWidget {
+class MyHomePage extends StatefulWidget {
   @override
-  _MealFormState createState() => _MealFormState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MealFormState extends State<MealForm> {
-  TextEditingController morningQtyController = TextEditingController();
-  TextEditingController lunchQtyController = TextEditingController();
-  TextEditingController dinnerQtyController = TextEditingController();
-    TextEditingController foodGramsController= TextEditingController();
-
-
-  String? selectedMorning;
-  String? selectedLunch;
-  String? selectedDinner;
-  String? selectedFoodGrams;
-  int morningCalories = 0;
-
-  List<String> mealOptions = ['Select', 'Toast', 'Omelette', 'Sandwich', 'Salad', 'Pasta', 'Pizza', 'Chicken', 'Fish', 'Vegetables'];
-
-  Map<String, int> calorieMap = {
-    'Toast': 100,
-    'Omelette': 200,
-    'Sandwich': 300,
-    'Salad': 150,
-    'Pasta': 400,
-    'Pizza': 500,
-    'Chicken': 250,
-    'Fish': 300,
-    'Vegetables': 120,
-  };
-  
-  List<String> foodGramsOptions = [
-    '100 grams',
-    '200 grams',
-    '300 grams',
-    '400 grams',
-    '500 grams',
+class _MyHomePageState extends State<MyHomePage> {
+  List<Dish> dishes = [
+    Dish(name: 'Apple', caloriesPerGram: 0.52),
+    Dish(name: 'Banana', caloriesPerGram: 1.05),
+    Dish(name: 'Chicken Breast', caloriesPerGram: 1.65),
+    // Add more dishes with their respective calorie values
   ];
 
-  Map<String, int> foodGramMap ={
-     '100 grams':100,
-    '200 grams':200,
-    '300 grams':300,
-    '400 grams':400,
-    '500 grams':500,
-  };
+  Dish? selectedDish;
+  double quantity = 0.0;
+  String selectedMeasurement = 'Grams';
 
-  int calculateCalories(String? selectedDish, String? quantity) {
-    if (selectedDish != null && quantity != null && quantity.isNotEmpty) {
-      int dishCalories = calorieMap[selectedDish] ?? 0;
-      int quantityValue = int.tryParse(quantity) ?? 0;
-      morningCalories = dishCalories * quantityValue;
-      return dishCalories * quantityValue;
-    }
-    return 0;
-  }
-  
-
-  
-  // int calculateFoodGrams(String? selectedDish, String? quantity) {
-  //   if (selectedFoodGrams != null && quantity != null && quantity.isNotEmpty) {
-  //     int dishFoodGrams = foodGramMap[selectedDish] ?? 0;
-  //     int quantityValue = int.tryParse(quantity) ?? 0;
-  //     return dishFoodGrams * quantityValue;
-  //   }
-  //   return 0;
-  // }
- 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Dish Calories Calculator'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            DropdownButtonFormField<String>(
-              value: selectedMorning,
-              items: mealOptions.map((String meal) {
-                return DropdownMenuItem<String>(
-                  value: meal == 'Select' ? null : meal,
-                  child: Text(meal),
-                );
-              }).toList(),
-              onChanged: (String? value) {
+            DropdownButton<Dish>(
+              value: selectedDish,
+              onChanged: (Dish? value) {
                 setState(() {
-                  selectedMorning = value;
+                  selectedDish = value;
                 });
               },
-              decoration: InputDecoration(labelText: 'Dish Name'),
-            ),
-            SizedBox(height: 32.0),
-
-              DropdownButtonFormField<String>(
-              value: selectedFoodGrams,
-              items: foodGramsOptions.map((String gram) {
-                return DropdownMenuItem<String>(
-                  value: gram == 'Select' ? null : gram,
-                  child: Text(gram),
+              items: dishes.map<DropdownMenuItem<Dish>>((Dish dish) {
+                return DropdownMenuItem<Dish>(
+                  value: dish,
+                  child: Text(dish.name),
                 );
               }).toList(),
-              onChanged: (String? value) {
-                setState(() {
-                  selectedFoodGrams = value;
-                });
-              },
-              decoration: InputDecoration(labelText: 'Food Grams'),
+              hint: Text('Select Dish'),
             ),
-            SizedBox(height: 32.0),
-
-            TextFormField(
-              controller: morningQtyController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Quantity'),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        quantity = double.tryParse(value) ?? 0.0;
+                      });
+                    },
+                    decoration: InputDecoration(labelText: 'Quantity'),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+                SizedBox(width: 10),
+                DropdownButton<String>(
+                  value: selectedMeasurement,
+                  onChanged: (String? value) {
+                    setState(() {
+                      selectedMeasurement = value ?? 'Grams';
+                    });
+                  },
+                  items: ['Grams', 'Bowl', 'Cup'].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ],
             ),
-            SizedBox(height: 16.0),
-            // label
-            Text(
-              'ToatalColories (800 of $morningCalories )',
-              style: TextStyle(fontSize: 20.0),            
-            ),
-
-
-              ElevatedButton(
-              onPressed: () {
-                // Handle form submission here
-                int morningCalories = calculateCalories(selectedMorning, morningQtyController.text);
-                  print('Morning: $selectedMorning, Quantity: ${morningQtyController.text}, Calories: $morningCalories, Food Grams: ${selectedFoodGrams}');
-                
-              },
-              child: Text('Submit'),
-            ),
-
-
- //Lunch 
-              DropdownButtonFormField<String>(
-              value: selectedLunch,
-              items: mealOptions.map((String meal) {
-                return DropdownMenuItem<String>(
-                  value: meal == 'Select' ? null : meal,
-                  child: Text(meal),
-                );
-              }).toList(),
-              onChanged: (String? value) {
-                setState(() {
-                  selectedLunch = value;
-                });
-              },
-              decoration: InputDecoration(labelText: 'Dish Name'),
-            ),
-            SizedBox(height: 32.0),
-
-              DropdownButtonFormField<String>(
-              value: selectedFoodGrams,
-              items: foodGramsOptions.map((String gram) {
-                return DropdownMenuItem<String>(
-                  value: gram == 'Select' ? null : gram,
-                  child: Text(gram),
-                );
-              }).toList(),
-              onChanged: (String? value) {
-                setState(() {
-                  selectedFoodGrams = value;
-                });
-              },
-              decoration: InputDecoration(labelText: 'Food Grams'),
-            ),
-            SizedBox(height: 32.0),
-            TextFormField(
-              controller: lunchQtyController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Quantity'),
-            ),
-            SizedBox(height: 16.0),
-              ElevatedButton(
-              onPressed: () {
-                // Handle form submission here
-                int lunchCalories = calculateCalories(selectedLunch, lunchQtyController.text);
-
-                print('Lunch: $selectedLunch, Quantity: ${lunchQtyController.text}, Calories: $lunchCalories, Food Grams: ${selectedFoodGrams}');
-              },
-              child: Text('Submit'),
-            ),
-            //Dinner 
-            DropdownButtonFormField<String>(
-              value: selectedDinner,
-              items: mealOptions.map((String meal) {
-                return DropdownMenuItem<String>(
-                  value: meal == 'Select' ? null : meal,
-                  child: Text(meal),
-                );
-              }).toList(),
-              onChanged: (String? value) {
-                setState(() {
-                  selectedDinner = value;
-                });
-              },
-              decoration: InputDecoration(labelText: 'Dish Name'),
-            ),
-            SizedBox(height: 32.0),
-              DropdownButtonFormField<String>(
-              value: selectedFoodGrams,
-              items: foodGramsOptions.map((String gram) {
-                return DropdownMenuItem<String>(
-                  value: gram == 'Select' ? null : gram,
-                  child: Text(gram),
-                );
-              }).toList(),
-              onChanged: (String? value) {
-                setState(() {
-                  selectedFoodGrams = value;
-                });
-              },
-              decoration: InputDecoration(labelText: 'Food Grams'),
-            ),
-            SizedBox(height: 32.0),
-              TextFormField(
-              controller: lunchQtyController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: ' Quantity'),
-            ),
-            SizedBox(height: 16.0),
-            
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Handle form submission here
-                int dinnerCalories = calculateCalories(selectedDinner, dinnerQtyController.text);
-                print('Dinner: $selectedDinner, Quantity: ${dinnerQtyController.text}, Calories: $dinnerCalories, Food Grams: ${selectedFoodGrams}',);
+                calculateTotalCalories();
               },
-              child: Text('Submit'),
+              child: Text('Calculate Calories'),
             ),
+            SizedBox(height: 10),
+            Text('Total Calories: ${calculateTotalCalories()}'),
           ],
         ),
       ),
     );
+  }
+
+  double calculateTotalCalories() {
+    if (selectedDish == null || quantity <= 0) {
+      return 0.0;
+    }
+
+    double calories = selectedDish!.caloriesPerGram * quantity;
+
+    // Adjust calories based on the selected measurement type
+    if (selectedMeasurement == 'Bowl') {
+      calories *= 2; // Adjust based on your own conversion factor
+    } else if (selectedMeasurement == 'Cup') {
+      calories *= 3; // Adjust based on your own conversion factor
+    }
+
+    return calories;
   }
 }
