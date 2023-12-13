@@ -35,6 +35,7 @@ class _MealFormState extends State<MealForm> {
   String? selectedLunch;
   String? selectedDinner;
   String? selectedFoodGrams;
+  int morningCalories = 0;
 
   List<String> mealOptions = ['Select', 'Toast', 'Omelette', 'Sandwich', 'Salad', 'Pasta', 'Pizza', 'Chicken', 'Fish', 'Vegetables'];
 
@@ -58,26 +59,35 @@ class _MealFormState extends State<MealForm> {
     '500 grams',
   ];
 
+  Map<String, int> foodGramMap ={
+     '100 grams':100,
+    '200 grams':200,
+    '300 grams':300,
+    '400 grams':400,
+    '500 grams':500,
+  };
+
   int calculateCalories(String? selectedDish, String? quantity) {
     if (selectedDish != null && quantity != null && quantity.isNotEmpty) {
       int dishCalories = calorieMap[selectedDish] ?? 0;
       int quantityValue = int.tryParse(quantity) ?? 0;
+      morningCalories = dishCalories * quantityValue;
       return dishCalories * quantityValue;
     }
     return 0;
   }
+  
 
   
   // int calculateFoodGrams(String? selectedDish, String? quantity) {
   //   if (selectedFoodGrams != null && quantity != null && quantity.isNotEmpty) {
-  //     // int dishFoodGrams = foodGramsOptions[selectedDish] ?? 0;
+  //     int dishFoodGrams = foodGramMap[selectedDish] ?? 0;
   //     int quantityValue = int.tryParse(quantity) ?? 0;
   //     return dishFoodGrams * quantityValue;
   //   }
   //   return 0;
   // }
-
-
+ 
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -126,19 +136,24 @@ class _MealFormState extends State<MealForm> {
               decoration: InputDecoration(labelText: 'Quantity'),
             ),
             SizedBox(height: 16.0),
-
-  
+            // label
+            Text(
+              'ToatalColories (800 of $morningCalories )',
+              style: TextStyle(fontSize: 20.0),            
+            ),
 
 
               ElevatedButton(
               onPressed: () {
                 // Handle form submission here
                 int morningCalories = calculateCalories(selectedMorning, morningQtyController.text);
-                // int morningFoodGrams = calculateFoodGrams(selectedFoodGrams, foodGramsController.text);
-                print('Morning: $selectedMorning, Quantity: ${morningQtyController.text}, Calories: $morningCalories, Food Grams: $selectedFoodGrams');
+                  print('Morning: $selectedMorning, Quantity: ${morningQtyController.text}, Calories: $morningCalories, Food Grams: ${selectedFoodGrams}');
+                
               },
               child: Text('Submit'),
             ),
+
+
  //Lunch 
               DropdownButtonFormField<String>(
               value: selectedLunch,
